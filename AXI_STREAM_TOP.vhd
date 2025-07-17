@@ -98,8 +98,87 @@ port (
 end AXI_STREAM_TOP;
 
 architecture Behavioral of AXI_STREAM_TOP is
+-- SIGNALS GOES HERE
+-- axilite signals
+
+-- mux signals
+        signal sel  :  std_logic;
+        signal AXI_FIFO  : std_logic_vector(63 downto 0);
+        signal STREAM_FIFO :std_logic_vector(63 downto 0);
+        signal OUT_FIFO  :std_logic_vector(63 downto 0);
+        signal axi_fifo_data: std_logic_vector(63 downto 0);
+        signal fifo_sel: std_logic ;
+--stream signals
+
 
 begin
+    fifo_inst: entity work.AXIS_STREAM
+        -- Clock and Reset
+port map(
+        clk  =>  S_AXI_ACLK,     
+        aresetn   =>  S_AXI_ARESETN,
 
+        -- AXI Stream Input
+        s_axis_tvalid  => s_axis_tvalid,
+        s_axis_tready  => s_axis_tready,
+        s_axis_tdata  =>  OUT_FIFO,
+        s_axis_tlast => s_axis_tlast , 
+        s_axis_tkeep  => s_axis_tkeep,
+
+        -- AXI Stream Output
+        m_axis_tvalid  => m_axis_tvalid,
+        m_axis_tready =>  m_axis_tready,
+        m_axis_tdata =>   m_axis_tdata,
+        m_axis_tlast =>  m_axis_tlast,
+        m_axis_tkeep =>  m_axis_tkeep,
+         
+  
+   --flags
+        rerr => rerr,
+        rcount => rcount,
+        werr => werr,
+        wcount => wcount,
+        wrst => wrst,
+        rrst =>   rrst
+    );     
+    
+ MUX_inst: entity work.OUTPUT_MUX
+    port map(
+        sel    => sel,
+        AXI_FIFO   =>  axi_fifo_data,
+        STREAM_FIFO  =>  s_axis_tdata ,
+        OUT_FIFO    => OUT_FIFO
+     
+    
+    );
+ 
+ 
+ AXI_LITE_inst: entity work.AXI_LITE_FIFO
+    port map(
+		S_AXI_ACLK	 => S_AXI_ACLK,
+		S_AXI_ARESETN	 => S_AXI_ARESETN,
+		S_AXI_AWADDR	 => S_AXI_AWADDR,
+		S_AXI_AWPROT	 => S_AXI_AWPROT,
+		S_AXI_AWVALID	 => S_AXI_AWVALID,
+		S_AXI_AWREADY	 => S_AXI_AWREADY,
+		S_AXI_WDATA	 => S_AXI_WDATA,
+		S_AXI_WSTRB	 => S_AXI_WSTRB,
+		S_AXI_WVALID	 => S_AXI_WVALID,
+		S_AXI_WREADY	 => S_AXI_WREADY,
+		S_AXI_BRESP	 => S_AXI_BRESP,
+		S_AXI_BVALID	 => S_AXI_BVALID,
+		S_AXI_BREADY	 => S_AXI_BREADY,
+		S_AXI_ARADDR	 => S_AXI_ARADDR,
+		S_AXI_ARPROT	 => S_AXI_ARPROT,
+		S_AXI_ARVALID	 => S_AXI_ARVALID,
+		S_AXI_ARREADY	 => S_AXI_ARREADY,
+		S_AXI_RDATA	 => S_AXI_RDATA,
+		S_AXI_RRESP	 => S_AXI_RRESP,
+		S_AXI_RVALID	 => S_AXI_RVALID,
+		S_AXI_RREADY	 => S_AXI_RREADY,
+        axi_fifo_data 	 => axi_fifo_data,
+        fifo_sel    	 => fifo_sel
+    
+    );
 
 end Behavioral;

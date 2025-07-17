@@ -87,7 +87,7 @@ begin
     -- ======================= 
     -- FIFO Instance
     -- =======================
-    fifo_inst: entity work.FIFO_36K 
+    fifo_stream: entity work.FIFO_36K 
 
         port map (
             clk     => clk,
@@ -108,6 +108,7 @@ begin
   -- controll signals
              
         );
+  
 
     -- =======================
     -- Input Valid Logic
@@ -131,7 +132,7 @@ begin
     process(clk, aresetn)
     begin
         if aresetn = '0' then
-            --counter <= (others => '0');
+            --counter <= (others => '0'); 
             fifo_wr_en <= '0';
             fifo_din <= (others => '0');
             data_out_last <= '0';
